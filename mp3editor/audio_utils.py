@@ -23,17 +23,62 @@ import os
 from dataclasses import dataclass
 from typing import List, Optional
 
+import re
+from subprocess import PIPE, Popen
+
 import imageio_ffmpeg
 import pydub.utils as _pydub_utils
+import pydub.audio_segment as _pydub_audio_segment
 from pydub import AudioSegment
-from pydub.utils import mediainfo
 
 _FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
-# Use bundled ffmpeg for both encoding/decoding and probing.
 AudioSegment.converter = _FFMPEG
 _pydub_utils.get_encoder_name = lambda: _FFMPEG
-_pydub_utils.get_prober_name = lambda: _FFMPEG
+
+
+def _mediainfo_json(filepath, read_ahead_limit=-1):
+    """Parse ffmpeg -i stderr to produce a minimal mediainfo-style dict for pydub."""
+    proc = Popen([_FFMPEG, "-i", filepath], stdout=PIPE, stderr=PIPE)
+    _, stderr = proc.communicate()
+    text = stderr.decode("utf-8", errors="replace")
+
+    # Detect codec name from ffmpeg output, e.g. "Audio: mp3", "Audio: aac"
+    codec_name = "mp3"
+    m = re.search(r"Audio:\s*(\w+)", text)
+    if m:
+        codec_name = m.group(1).lower()
+
+    stream = {
+        "codec_type": "audio",
+        "codec_name": codec_name,
+        "sample_fmt": "fltp",  # triggers pydub's safe branch -> bits_per_sample=16
+        "bits_per_sample": 0,
+    }
+
+    m = re.search(r"Audio:.*?(\d+) Hz", text)
+    if m:
+        stream["sample_rate"] = m.group(1)
+
+    m = re.search(r"Audio:.*?Hz,\s*(\w+)", text)
+    if m:
+        ch = m.group(1)
+        stream["channels"] = "2" if ch in ("stereo", "2") else "1"
+
+    m = re.search(r"bitrate:\s*(\d+)\s*kb/s", text)
+    if m:
+        stream["bit_rate"] = str(int(m.group(1)) * 1000)
+
+    m = re.search(r"Duration:\s*(\d+):(\d+):(\d+\.\d+)", text)
+    if m:
+        h, mn, s = int(m.group(1)), int(m.group(2)), float(m.group(3))
+        stream["duration"] = str(h * 3600 + mn * 60 + s)
+
+    return {"streams": [stream], "format": {"bit_rate": stream.get("bit_rate", "")}}
+
+
+_pydub_utils.mediainfo_json = _mediainfo_json
+_pydub_audio_segment.mediainfo_json = _mediainfo_json
 
 DEFAULT_BITRATE = "320k"
 
@@ -53,42 +98,20 @@ class TrimSegment:
 
 
 def load_audio(file_path: str) -> AudioSegment:
-    """
-    Load an audio file (mp3/wav/etc.) from disk into an AudioSegment.
-
-    Args:
-        file_path: Path to the audio file on disk.
-
-    Returns:
-        The decoded AudioSegment.
-
-    Raises:
-        FileNotFoundError: if file_path does not exist.
-        Exception: if ffmpeg/pydub cannot decode the file.
-    """
+    """Load an audio file from disk into an AudioSegment."""
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Audio file not found: {file_path}")
-    return AudioSegment.from_file(file_path)
+    ext = os.path.splitext(file_path)[1].lstrip(".").lower() or "mp3"
+    return AudioSegment.from_file(file_path, format=ext)
 
 
 def get_source_bitrate(file_path: str) -> str:
-    """
-    Detect a file's original bitrate so exports can match it and keep
-    perceived audio quality unchanged.
-
-    Args:
-        file_path: Path to the source audio file.
-
-    Returns:
-        Bitrate string such as "192k". Falls back to DEFAULT_BITRATE
-        if detection fails.
-    """
+    """Detect a file's original bitrate. Falls back to DEFAULT_BITRATE if detection fails."""
     try:
-        info = mediainfo(file_path)
-        bit_rate = info.get("bit_rate")
+        data = _mediainfo_json(file_path)
+        bit_rate = data["streams"][0].get("bit_rate") or data["format"].get("bit_rate")
         if bit_rate:
-            kbps = max(1, int(int(bit_rate) / 1000))
-            return f"{kbps}k"
+            return f"{max(1, int(int(bit_rate) / 1000))}k"
     except Exception:
         pass
     return DEFAULT_BITRATE
