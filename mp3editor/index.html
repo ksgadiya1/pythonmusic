@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO -->
+  <title>Free Online MP3 Editor – Cut, Trim, Merge & Crossfade Audio</title>
+  <meta name="description" content="Free browser-based MP3 editor. Cut and trim audio clips, merge multiple tracks, add crossfade transitions, and download in original quality — no signup, no install." />
+  <meta name="keywords" content="mp3 editor online, cut mp3, trim audio, merge mp3, crossfade audio, audio editor free, split mp3, join mp3 files, online audio cutter, mp3 cutter no watermark" />
+  <link rel="canonical" href="https://mp3editor.vercel.app/" />
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mp3editor.vercel.app/" />
+  <meta property="og:title" content="Free Online MP3 Editor – Cut, Trim, Merge & Crossfade" />
+  <meta property="og:description" content="Cut, trim, merge and crossfade MP3 files in your browser. No signup. No watermark. Original audio quality preserved." />
+  <meta property="og:image" content="https://mp3editor.vercel.app/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Free Online MP3 Editor – Cut, Trim, Merge & Crossfade" />
+  <meta name="twitter:description" content="Cut, trim, merge and crossfade MP3 files in your browser. No signup. No watermark. Original audio quality preserved." />
+  <meta name="twitter:image" content="https://mp3editor.vercel.app/og-image.png" />
+
+  <!-- Structured Data (Google Rich Results) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "MP3 Editor Online",
+    "url": "https://mp3editor.vercel.app/",
+    "description": "Free online MP3 editor to cut, trim, merge and crossfade audio files with original quality preserved.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Cut and trim MP3 audio",
+      "Merge multiple audio clips",
+      "Crossfade between tracks",
+      "Preserve original bitrate and quality",
+      "No signup required",
+      "No watermark"
+    ]
+  }
+  </script>
+
+  <!-- FAQ Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I cut an MP3 online for free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Upload your MP3, enter a start and end time (e.g. 0:30 to 1:15), click 'Add Trimmed Piece', then download. No signup needed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I merge multiple MP3 files online?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Add as many trimmed pieces as you like, reorder them, then click 'Merge Pieces' to stitch them into one file."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does this MP3 editor reduce audio quality?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Trimming is a lossless PCM operation. The export automatically matches your original file's bitrate, sample rate, and channel count."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is crossfade and how do I use it?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Crossfade smoothly blends the end of one clip into the start of the next. Use the crossfade slider (0–2000 ms) before merging."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f0f0f; color: #f0f0f0; line-height: 1.6; }
+    a { color: #7c6af7; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 80px 24px 60px;
+      text-align: center;
+    }
+    header h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 16px; }
+    header h1 span { color: #7c6af7; }
+    header p { font-size: 1.2rem; color: #b0b0c0; max-width: 600px; margin: 0 auto 32px; }
+    .cta {
+      display: inline-block;
+      background: #7c6af7;
+      color: #fff;
+      padding: 16px 40px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+    .cta:hover { background: #6355e0; text-decoration: none; }
+
+    section { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+    .feature-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 28px 24px;
+    }
+    .feature-card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .feature-card p { color: #9090a0; font-size: 0.95rem; }
+
+    .steps { counter-reset: step; display: flex; flex-direction: column; gap: 20px; }
+    .step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .step-num {
+      counter-increment: step;
+      min-width: 40px; height: 40px;
+      background: #7c6af7;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.1rem;
+    }
+    .step-num::before { content: counter(step); }
+    .step h3 { margin-bottom: 4px; }
+    .step p { color: #9090a0; font-size: 0.95rem; }
+
+    .faq { display: flex; flex-direction: column; gap: 16px; }
+    details {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    summary { font-weight: 600; cursor: pointer; list-style: none; }
+    summary::after { content: " ＋"; float: right; color: #7c6af7; }
+    details[open] summary::after { content: " －"; }
+    details p { margin-top: 12px; color: #9090a0; }
+
+    footer { text-align: center; padding: 40px 24px; color: #555; font-size: 0.9rem; border-top: 1px solid #1a1a2e; }
+
+    h2 { font-size: 1.8rem; margin-bottom: 32px; }
+    .badge { display: inline-block; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 20px; padding: 6px 16px; font-size: 0.85rem; color: #9090a0; margin: 4px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>✂️ Free Online <span>MP3 Editor</span></h1>
+  <p>Cut, trim, merge and crossfade audio clips in seconds — no signup, no watermark, original quality preserved.</p>
+  <a class="cta" href="https://YOUR_STREAMLIT_APP_URL" rel="noopener">Open Editor Free →</a>
+  <br /><br />
+  <span class="badge">🎵 MP3 / WAV / M4A</span>
+  <span class="badge">⚡ No install</span>
+  <span class="badge">🔒 No signup</span>
+  <span class="badge">💎 Lossless quality</span>
+</header>
+
+<section aria-label="Features">
+  <h2>Everything you need to edit audio</h2>
+  <div class="features">
+    <div class="feature-card">
+      <div class="icon">✂️</div>
+      <h3>Cut & Trim</h3>
+      <p>Select any start → end time range and extract that exact clip. Works with seconds, mm:ss, or hh:mm:ss.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔗</div>
+      <h3>Merge Tracks</h3>
+      <p>Add multiple clips in any order and stitch them into one seamless MP3 file with a single click.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🌊</div>
+      <h3>Crossfade</h3>
+      <p>Blend the end of one clip into the start of the next with a smooth crossfade (0–2000 ms).</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💎</div>
+      <h3>Original Quality</h3>
+      <p>Exports match your file's original bitrate, sample rate, and channel count — zero quality loss.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔄</div>
+      <h3>Reorder Clips</h3>
+      <p>Drag pieces up or down to rearrange the final track order before merging.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">⬇️</div>
+      <h3>Instant Download</h3>
+      <p>Preview the merged result right in the browser, then download your finished MP3.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-label="How to use" style="background:#111; border-radius:16px; max-width:100%; padding:60px 0;">
+  <div style="max-width:900px; margin:0 auto; padding:0 24px;">
+    <h2>How to edit your MP3 in 4 steps</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num"></div>
+        <div>
+          <h3>Upload your audio file</h3>
+          <p>Drag and drop or browse to select an MP3, WAV, or M4A file. Your file stays in your browser session — nothing is stored on our servers.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div>
+          <h3>Select a time range to keep</h3>
+          <p>Enter a From and To time (e.g. 0:30 → 1:15) and click "Add Trimmed Piece". Repeat for as many clips as you need.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div>
+          <h3>Reorder and preview clips</h3>
+          <p>Use the ⬆️ ⬇️ buttons to arrange clips in the order you want. Preview each piece before merging.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div>
+          <h3>Merge and download</h3>
+          <p>Optionally set a crossfade, click "Merge Pieces", preview the result, and download your final MP3.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-label="FAQ">
+  <h2>Frequently asked questions</h2>
+  <div class="faq">
+    <details>
+      <summary>How do I cut an MP3 online for free?</summary>
+      <p>Upload your MP3, enter a start and end time (e.g. 0:30 to 1:15), click "Add Trimmed Piece", then download. No signup needed.</p>
+    </details>
+    <details>
+      <summary>Can I merge multiple MP3 files online?</summary>
+      <p>Yes. Add as many trimmed pieces as you like, reorder them with the arrow buttons, then click "Merge Pieces" to stitch them into one file.</p>
+    </details>
+    <details>
+      <summary>Does this MP3 editor reduce audio quality?</summary>
+      <p>No. Trimming is a lossless PCM operation. The export automatically matches your original file's bitrate, sample rate, and channel count.</p>
+    </details>
+    <details>
+      <summary>What is crossfade and how do I use it?</summary>
+      <p>Crossfade smoothly blends the end of one clip into the start of the next instead of a hard cut. Use the crossfade slider (0–2000 ms) before merging.</p>
+    </details>
+    <details>
+      <summary>What audio formats are supported?</summary>
+      <p>MP3, WAV, and M4A files are supported for upload. The output is always a high-quality MP3.</p>
+    </details>
+    <details>
+      <summary>Is my audio file uploaded to a server?</summary>
+      <p>Your file is only used within your browser session for processing and is not permanently stored or shared.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <p>Free Online MP3 Editor — Cut · Trim · Merge · Crossfade</p>
+  <p style="margin-top:8px;">No signup · No watermark · Original quality</p>
+</footer>
+
+</body>
+</html>
