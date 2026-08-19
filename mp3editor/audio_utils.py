@@ -23,22 +23,17 @@ import os
 from dataclasses import dataclass
 from typing import List, Optional
 
-import static_ffmpeg
-static_ffmpeg.add_paths()  # adds ffmpeg + ffprobe to PATH before pydub imports
-
 import imageio_ffmpeg
 import pydub.utils as _pydub_utils
-import pydub.audio_segment as _pydub_audio_segment
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 
 _FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
-# Use bundled ffmpeg for encoding/decoding.
+# Use bundled ffmpeg for both encoding/decoding and probing.
 AudioSegment.converter = _FFMPEG
 _pydub_utils.get_encoder_name = lambda: _FFMPEG
-# static_ffmpeg.add_paths() already put ffprobe on PATH, so pydub's
-# get_prober_name() will find it via which("ffprobe") automatically.
+_pydub_utils.get_prober_name = lambda: _FFMPEG
 
 DEFAULT_BITRATE = "320k"
 

@@ -1,4 +1,3 @@
 streamlit>=1.32
 pydub>=0.25.1
 imageio-ffmpeg>=0.4.9
-static-ffmpeg>=2.5
